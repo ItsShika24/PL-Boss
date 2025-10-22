@@ -1,21 +1,35 @@
 <?php
+// ============================================
+// FILE: admin/login.php
+// Login untuk Admin
+// ============================================
+
+// Memuat konfigurasi database dan sesi
 require_once '../config.php';
 
+// Cek apakah ada data yang dikirim melalui metode POST
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Mengambil data dari form
     $email = $_POST['email'];
+    // Melakukan hashing MD5 pada password yang diinput
     $pass = md5($_POST['password']);
     
-    // Cek di tabel admin terlebih dahulu
-    $stmt = $pdo->prepare("SELECT * FROM admin WHERE email = ? AND pass = ?");
+    // Prepared Statement untuk mencari user berdasarkan email dan password
+    // (Error terjadi di baris 14 saat mencoba menjalankan query ini sebelum tabel dibuat)
+    $stmt = $pdo->prepare("SELECT * FROM user WHERE email = ? AND pass = ?");
     $stmt->execute([$email, $pass]);
-    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    if($admin) {
-        $_SESSION['admin_id'] = $admin['id_admin'];
-        $_SESSION['admin_nama'] = $admin['nama'];
+    // Verifikasi user dan cek apakah email mengandung string 'admin'
+    if($user && strpos($user['email'], 'admin') !== false) {
+        // Login Berhasil - Buat variabel session
+        $_SESSION['admin_id'] = $user['id_user'];
+        $_SESSION['admin_nama'] = $user['nama'];
+        // Redirect ke halaman admin utama
         header('Location: index.php');
         exit;
     } else {
+        // Login Gagal
         $error = "Email atau password salah!";
     }
 }
@@ -55,14 +69,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" placeholder="admin123" required>
+                <input type="password" name="password" required>
             </div>
             
             <button type="submit" class="btn">Login</button>
         </form>
         
         <div class="link">
-            <a href="../index.php">← Kembali ke Halaman User</a>
+            <a href="../user/index.php">← Kembali ke Halaman User</a>
         </div>
     </div>
 </body>

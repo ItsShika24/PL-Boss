@@ -1,5 +1,4 @@
 <?php
-
 require_once '../config.php';
 
 if(!isset($_SESSION['admin_id'])) {
@@ -43,7 +42,10 @@ $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
     
     <div class="container">
-        <a href="index.php" class="btn">← Kembali</a>
+        <!-- Tambahkan tombol kembali di sini -->
+        <div class="button-group">
+        <a href="index.php" class="btn btn-secondary">Kembali ke Dashboard</a>
+    </div>
         
         <table>
             <thead>
